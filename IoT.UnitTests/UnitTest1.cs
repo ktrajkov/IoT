@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace Iot.UnitTests
 {
@@ -9,7 +8,6 @@ namespace Iot.UnitTests
         [TestMethod]
         public void TestMethod1()
         {
-            throw new Exception();
         }
     }
 }
