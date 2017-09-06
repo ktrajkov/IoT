@@ -16,4 +16,8 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IoT.Web\IoT.Web.csproj" />
+  </ItemGroup>
+
 </Project>

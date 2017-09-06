@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Iot.UnitTests
+namespace IoT.UnitTests
 {
     [TestClass]
     public class UnitTest1
