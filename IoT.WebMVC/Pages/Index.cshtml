@@ -32,12 +32,13 @@
 <script data-main="scripts/main" src="https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js"></script>
     <script>
         var IoT = this.IoT || {};
-
+        debugger;
+        var serverUrl = '@Model.WSServerUrl';
         (function () {
             "use strict";
             var dataViewModel = new IoT.dataViewModel();
 
-            var connection = new WebSocketManager.Connection("ws://iot-1.apphb.com/iot");
+            var connection = new WebSocketManager.Connection(serverUrl);
             connection.enableLogging = true;
 
             connection.connectionMethods.onConnected = () => {
