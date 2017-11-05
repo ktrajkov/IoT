@@ -24,14 +24,7 @@ namespace IoT.WebMVC.Pages
 
         public void OnGet()
         {
-            WSServerUrl = _settings.WSServerUrl;
-            var envVariable = Environment.GetEnvironmentVariables();
-            StringBuilder v = new StringBuilder();
-            foreach (DictionaryEntry item in envVariable)
-            {
-                v.AppendFormat("key: {0} - value: {1}", item.Key, item.Value);
-            }
-            EnvironmentName = v.ToString();
+            WSServerUrl = _settings.WSServerUrl;          
         }
     }
 }
