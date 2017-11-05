@@ -13,6 +13,7 @@ namespace IoT.WebMVC.Pages
         private readonly AppSettings _settings;
 
         public string WSServerUrl { get; set; }
+        public string EnvironmentName { get; set; }
 
         public IndexModel(IOptions<AppSettings> settings)
         {
@@ -22,6 +23,7 @@ namespace IoT.WebMVC.Pages
         public void OnGet()
         {
             WSServerUrl = _settings.WSServerUrl;
+            EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         }
     }
 }
