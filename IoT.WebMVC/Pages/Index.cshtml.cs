@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
+using System.Text;
+using System.Collections;
 
 namespace IoT.WebMVC.Pages
 {
@@ -23,7 +25,13 @@ namespace IoT.WebMVC.Pages
         public void OnGet()
         {
             WSServerUrl = _settings.WSServerUrl;
-            EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var envVariable = Environment.GetEnvironmentVariables();
+            StringBuilder v = new StringBuilder();
+            foreach (DictionaryEntry item in envVariable)
+            {
+                v.AppendFormat("key: {0} - value: {1}", item.Key, item.Value);
+            }
+            EnvironmentName = v.ToString();
         }
     }
 }
