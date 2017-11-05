@@ -1,0 +1,64 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Chanel</th>
+                    <th>Temperature</th>
+                    <th>Datetime</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: data">
+                <tr>
+                    <td data-bind="text: $index() + 1"></td>
+                    <td data-bind="text: Id"></td>
+                    <td data-bind="text: Value"></td>
+                    <td data-bind="text: new Date().toLocaleString()"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/data-view-model.js"></script>
+<script data-main="scripts/main" src="https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js"></script>
+    <script>
+        var IoT = this.IoT || {};
+
+        (function () {
+            "use strict";
+            var dataViewModel = new IoT.dataViewModel();
+
+            var connection = new WebSocketManager.Connection("ws://192.168.2.150:45455/iot");
+            connection.enableLogging = true;
+
+            connection.connectionMethods.onConnected = () => {
+                //optional
+                console.log("You are now connected! Connection ID: " + connection.connectionId);
+            }
+
+            connection.connectionMethods.onDisconnected = () => {
+                //optional
+                console.log("Disconnected!");
+            }
+
+            connection.clientMethods["UpdateTemps"] = (message) => {
+                dataViewModel.addData(JSON.parse(message.data).Temps);              
+            };
+
+            connection.start();
+
+       
+
+            ko.applyBindings(dataViewModel);
+        }());
+    </script>
+}

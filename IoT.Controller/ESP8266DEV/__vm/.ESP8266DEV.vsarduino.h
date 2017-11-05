@@ -109,6 +109,6 @@ typedef long __PTRDIFF_TYPE__;
 #define interrupts() sei()
 #define noInterrupts() cli()
 
-#include "ESP8266.ino"
+#include "ESP8266DEV.ino"
 #endif
 #endif
