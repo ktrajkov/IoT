@@ -37,7 +37,7 @@
             "use strict";
             var dataViewModel = new IoT.dataViewModel();
 
-            var connection = new WebSocketManager.Connection("ws://192.168.2.150:45455/iot");
+            var connection = new WebSocketManager.Connection("ws://iot-1.apphb.com/iot");
             connection.enableLogging = true;
 
             connection.connectionMethods.onConnected = () => {

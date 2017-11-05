@@ -9,8 +9,10 @@
 #include <Hash.h>
 #include <ArduinoJson.h>
 
-#define WEB_SOCKET_SERVER_IP "192.168.2.150"
-#define WEB_SOCKET_SERVER_PORT 45455
+#define WEB_SOCKET_SERVER_IP "iot-1.apphb.com"
+//#define WEB_SOCKET_SERVER_IP "192.168.2.150"
+//#define WEB_SOCKET_SERVER_PORT 45455
+#define WEB_SOCKET_SERVER_PORT 80
 #define WEB_SOCKET_SERVER_PATH "/iot"
 
 #define CLIENT_ID "Arduino1"
@@ -135,6 +137,7 @@ void loop() {
 	digitalWrite(ESP_BUILTIN_LED, !digitalRead(ESP_BUILTIN_LED));
 
 	ArduinoOTA.handle();
+	delay(2000);
 	ReadTemps();
 	SendTemps();
 	webSocket.loop();
