@@ -9,18 +9,21 @@
 #include <Hash.h>
 #include <ArduinoJson.h>
 
-#define WEB_SOCKET_SERVER_IP "iot-1.apphb.com"
-//#define WEB_SOCKET_SERVER_IP "192.168.2.150"
-//#define WEB_SOCKET_SERVER_PORT 45455
-#define WEB_SOCKET_SERVER_PORT 80
-#define WEB_SOCKET_SERVER_PATH "/iot"
+#define _DEBUG
+#define SERIAL Serial
 
+#pragma region Network settings 
+#ifdef _DEBUG
+	#define WEB_SOCKET_SERVER_IP "192.168.2.150"
+	#define WEB_SOCKET_SERVER_PORT 52821
+#else
+	#define WEB_SOCKET_SERVER_IP "iot-1.apphb.com"
+	#define WEB_SOCKET_SERVER_PORT 80
+#endif
+#define WEB_SOCKET_SERVER_PATH "/iot"
 #define CLIENT_ID "Arduino1"
 
-
-#define SERIAL Serial
 WebSocketsClient webSocket;
-#pragma region Wifi credentials 
 
 IPAddress ip(192, 168, 2, 151);
 IPAddress gateway(192, 168, 2, 1);
@@ -129,6 +132,8 @@ void setup() {
 	Serial.println(WiFi.gatewayIP());
 	Serial.println(WiFi.subnetMask());
 	Serial.println(WiFi.dnsIP());
+	Serial.print("WS Server: ");
+	Serial.println(WEB_SOCKET_SERVER_IP);
 
 #pragma endregion
 }

@@ -10,12 +10,14 @@ using IoT.WebMVC.IoTHandler;
 using IoT.WSManager;
 using System.Text;
 using System.Collections;
+using System.Reflection;
+using IoT.Broker;
 
 namespace IoT.WebMVC
 {
     public static class EnvVariable
     {
-     //   public static List<>
+        //   public static List<>
     }
 
 
@@ -29,9 +31,8 @@ namespace IoT.WebMVC
                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                .AddEnvironmentVariables();
             Configuration = builder.Build();
-          
         }
-    
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -40,6 +41,9 @@ namespace IoT.WebMVC
             services.AddMvc();
             services.AddWebSocketManager();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.Configure<AppSettings>(Configuration.GetSection("AdafruitSettings"));
+
+            services.AddSingleton<IBroker, AdafruitBroker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoT.WSManager.Client", "IoT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoT.WSManager.Common", "IoT.WSManager.Common\IoT.WSManager.Common.csproj", "{4977AF1B-918F-47D6-BF28-B6D8A3A99359}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoT.Broker", "IoT.Broker\IoT.Broker.csproj", "{F83809F2-3D9B-467E-A314-50A39CB35A17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,14 @@ Global
 		{4977AF1B-918F-47D6-BF28-B6D8A3A99359}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4977AF1B-918F-47D6-BF28-B6D8A3A99359}.Release|x86.ActiveCfg = Release|Any CPU
 		{4977AF1B-918F-47D6-BF28-B6D8A3A99359}.Release|x86.Build.0 = Release|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Debug|x86.Build.0 = Debug|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Release|x86.ActiveCfg = Release|Any CPU
+		{F83809F2-3D9B-467E-A314-50A39CB35A17}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

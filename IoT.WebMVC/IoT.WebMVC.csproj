@@ -13,6 +13,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IoT.Broker\IoT.Broker.csproj" />
     <ProjectReference Include="..\IoT.Data.Contracts\IoT.Data.Contracts.csproj" />
     <ProjectReference Include="..\IoT.WSManager.Common\IoT.WSManager.Common.csproj" />
     <ProjectReference Include="..\IoT.WSManager\IoT.WSManager.csproj" />
