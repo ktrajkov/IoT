@@ -21,10 +21,11 @@
 #define WEB_SOCKET_SERVER_PORT 80
 #endif
 #define WEB_SOCKET_SERVER_PATH "/iot"
-#define ACCESS_TOKEN "Arduino1"
+#define CLIENT_ID "Arduino1"
 
 WebSocketsClient webSocket;
-IPAddress ip(192, 168, 2, 151);
+
+IPAddress ip(192, 168, 2, 152);
 IPAddress gateway(192, 168, 2, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress dns(46, 40, 72, 9);
@@ -37,11 +38,10 @@ const char* otapass = "AOTA0887";
 
 #pragma region Pin definitions
 
-//13 for sonoff
-#define ESP_BUILTIN_LED  2
+#define ESP_BUILTIN_LED  13
 #define ESP_RELAY 12
 
-const int SENSOR_PINS[] = { 4,5 };
+const int SENSOR_PINS[] = {  };
 
 #pragma endregion
 
@@ -51,16 +51,6 @@ Sensor sensors[NUMBER_OF_SENSORS];
 float currentTemps[NUMBER_OF_SENSORS];
 
 #pragma endregion
-
-#pragma region Timers
-
-const unsigned long ReadTempsInterval = 2000;
-
-// Declaring the variables holding the timer values for each LED.
-unsigned long ReadTempsTimer;
-
-#pragma endregion
-
 
 void setup() {
 
@@ -107,11 +97,11 @@ void setup() {
 
 #pragma region Setup WebSocketClient
 	// server address, port and URL
-	webSocket.begin(WEB_SOCKET_SERVER_IP, WEB_SOCKET_SERVER_PORT, WEB_SOCKET_SERVER_PATH + (String)"?access_token=" + (String)ACCESS_TOKEN);
+	webSocket.begin(WEB_SOCKET_SERVER_IP, WEB_SOCKET_SERVER_PORT, WEB_SOCKET_SERVER_PATH);
 	// event handler
 	webSocket.onEvent(WebSocketEvent);
 	// try ever 5000 again if connection has failed
-	webSocket.setReconnectInterval(10000);
+	webSocket.setReconnectInterval(5000);
 #pragma endregion
 
 #pragma region Setup Serial ports
@@ -151,17 +141,14 @@ void setup() {
 #pragma endregion
 }
 
-void loop() {	
-	ArduinoOTA.handle();	
+void loop() {
+	digitalWrite(ESP_BUILTIN_LED, !digitalRead(ESP_BUILTIN_LED));
+
+	ArduinoOTA.handle();
+	delay(2000);
+	//ReadTemps();
+	//SendTemps();
 	webSocket.loop();
-
-	if ((millis() - ReadTempsTimer) >= ReadTempsInterval)
-	{
-		ReadTemps();
-		SendTemps();
-		ReadTempsTimer = millis();
-	}
-
 }
 
 void WebSocketEvent(WStype_t type, uint8_t * payload, size_t length)
@@ -180,17 +167,23 @@ void WebSocketEvent(WStype_t type, uint8_t * payload, size_t length)
 		StaticJsonBuffer<400> jsonBuffer;
 		JsonObject& root = jsonBuffer.parseObject(payload);
 
+		String result;
+		root.printTo(result);
+		SERIAL.print("result: ");
+		SERIAL.println(result);
+
+
 		//	[WSc] get text : {"messageType":0, "data" : "OFF"}
 		String  status = root["data"];
 		if (status == "ON")
 		{
-			digitalWrite(ESP_BUILTIN_LED, LOW);
-			Log("relay: true");
+			//digitalWrite(ESP_RELAY, true);
+			SERIAL.println("relay: true");
 		}
 		else if (status == "OFF")
 		{
-			digitalWrite(ESP_BUILTIN_LED, HIGH);
-			Log("relay: false");
+			//digitalWrite(ESP_RELAY, false);
+			SERIAL.println("relay: false");
 		}
 	}
 	break;
@@ -215,6 +208,7 @@ void SendTemps()
 	JsonObject& root = jsonBuffer.parseObject(message);
 	JsonArray& arguments = root.createNestedArray("Arguments");
 	JsonObject& argument = arguments.createNestedObject();
+	argument["ClientId"] = CLIENT_ID;
 	JsonArray& tempArray = argument.createNestedArray("Temps");
 
 	for (int i = 0; i < NUMBER_OF_SENSORS; i++)
@@ -235,20 +229,4 @@ void  ReadTemps()
 	{
 		currentTemps[i] = sensors[i].GetCurrentTemp();
 	}
-}
-
-void Log(String log)
-{
-	StaticJsonBuffer<400> jsonBuffer;
-
-	//nead refactor
-	String message = "{\"MethodName\":\"Log\"}";
-	JsonObject& root = jsonBuffer.parseObject(message);
-	JsonArray& arguments = root.createNestedArray("Arguments");
-	arguments.add(log);
-	String result;
-	root.printTo(result);
-	SERIAL.println(result);
-	webSocket.sendTXT(result);
-
 }

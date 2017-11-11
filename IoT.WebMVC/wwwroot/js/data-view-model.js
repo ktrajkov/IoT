@@ -6,12 +6,15 @@ var IoT = this.IoT || {};
     "use strict";
     namespace.dataViewModel = function () {
         var self = this;
-
-        self.data = ko.observableArray();    
-        self.addData = function (data) {            
-            self.data.removeAll();
+        self.logs = ko.observableArray();
+        self.addLog = function (data) {
+            self.logs.push(data);
+        };
+        self.temps = ko.observableArray();    
+        self.addTemps = function (data) {            
+            self.temps.removeAll();
             data.forEach(function (element) {
-                self.data.push(element);
+                self.temps.push(element);
             });          
         };
     };

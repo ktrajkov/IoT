@@ -25,9 +25,9 @@ namespace IoT.WSManager
             WebSocketConnectionManager = webSocketConnectionManager;
         }
 
-        public virtual async Task OnConnected(WebSocket socket)
+        public virtual async Task OnConnected(string clientId, WebSocket socket)
         {
-            WebSocketConnectionManager.AddSocket(socket);
+            WebSocketConnectionManager.AddSocket(clientId, socket);
 
             await SendMessageAsync(socket, new Message()
             {
@@ -38,7 +38,15 @@ namespace IoT.WSManager
 
         public virtual async Task OnDisconnected(WebSocket socket)
         {
-            await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket)).ConfigureAwait(false);
+            var removedSocket = WebSocketConnectionManager.RemoveSocket(socket);
+            await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
+                                  statusDescription: "Closed by the WebSocketManager",
+                                  cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public void OnReceiveException(WebSocket socket)
+        {
+            WebSocketConnectionManager.RemoveSocket(socket);
         }
 
         public async Task SendMessageAsync(WebSocket socket, Message message)
@@ -58,7 +66,9 @@ namespace IoT.WSManager
 
         public async Task SendMessageAsync(string socketId, Message message)
         {
-            await SendMessageAsync(WebSocketConnectionManager.GetSocketById(socketId), message).ConfigureAwait(false);
+            var socket = WebSocketConnectionManager.GetSocketById(socketId);
+            if (socket != null)
+                await SendMessageAsync(socket, message).ConfigureAwait(false);
         }
 
         public async Task SendMessageToAllAsync(Message message)
@@ -94,7 +104,7 @@ namespace IoT.WSManager
             }
         }
 
-         public async Task SendMessageToGroupAsync(string groupID, Message message)
+        public async Task SendMessageToGroupAsync(string groupID, Message message)
         {
             var sockets = WebSocketConnectionManager.GetAllFromGroup(groupID);
             if (sockets != null)
@@ -113,7 +123,7 @@ namespace IoT.WSManager
             {
                 foreach (var id in sockets)
                 {
-                    if(id != except)
+                    if (id != except)
                         await SendMessageAsync(id, message);
                 }
             }
@@ -134,11 +144,11 @@ namespace IoT.WSManager
         public async Task InvokeClientMethodToGroupAsync(string groupID, string methodName, string except, params object[] arguments)
         {
             var sockets = WebSocketConnectionManager.GetAllFromGroup(groupID);
-            if(sockets != null)
+            if (sockets != null)
             {
                 foreach (var id in sockets)
                 {
-                    if(id != except)
+                    if (id != except)
                         await InvokeClientMethodAsync(id, methodName, arguments);
                 }
             }
@@ -147,9 +157,9 @@ namespace IoT.WSManager
         public async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, string serializedInvocationDescriptor)
         {
             try
-            {              
+            {
                 var invocationDescriptor = JsonConvert.DeserializeObject<InvocationDescriptor>(serializedInvocationDescriptor);
-                var method = this.GetType().GetMethod(invocationDescriptor.MethodName);  
+                var method = this.GetType().GetMethod(invocationDescriptor.MethodName);
                 if (method == null)
                 {
                     await SendMessageAsync(socket, new Message()
@@ -182,10 +192,10 @@ namespace IoT.WSManager
                     }).ConfigureAwait(false);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
         }
-    }   
+    }
 }

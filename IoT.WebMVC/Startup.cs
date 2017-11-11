@@ -59,8 +59,9 @@ namespace IoT.WebMVC
                 app.UseExceptionHandler("/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles();         
             app.UseWebSockets();
+
             app.MapWebSocketManager("/iot", serviceProvider.GetService<IoTMessageHandler>());
             app.UseMvc(routes =>
             {

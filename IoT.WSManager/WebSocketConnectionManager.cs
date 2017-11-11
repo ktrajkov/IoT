@@ -38,9 +38,11 @@ namespace IoT.WSManager
             return _sockets.FirstOrDefault(p => p.Value == socket).Key;
         }
 
-        public void AddSocket(WebSocket socket)
+        public void AddSocket(string cliendId, WebSocket socket)
         {
-            _sockets.TryAdd(CreateConnectionId(), socket);
+            WebSocket removedSocket;
+            _sockets.TryRemove(cliendId, out removedSocket);
+            _sockets.TryAdd(cliendId, socket);
         }
 
         public void AddToGroup(string socketID, string groupID)
@@ -69,14 +71,13 @@ namespace IoT.WSManager
             }
         }
 
-        public async Task RemoveSocket(string id)
+        public WebSocket RemoveSocket(WebSocket socket)
         {
-            WebSocket socket;
-            _sockets.TryRemove(id, out socket);
+            var id = GetId(socket);
+            WebSocket removedSocket;             
+            _sockets.TryRemove(id, out removedSocket);
 
-            await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
-                                    statusDescription: "Closed by the WebSocketManager",
-                                    cancellationToken: CancellationToken.None).ConfigureAwait(false);
+            return removedSocket;          
         }
 
         private string CreateConnectionId()
