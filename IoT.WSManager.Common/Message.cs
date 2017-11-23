@@ -10,6 +10,6 @@
     public class Message
     {
         public MessageType MessageType { get; set; }
-        public string Data { get; set; }
+        public object Data { get; set; }
     }
 }

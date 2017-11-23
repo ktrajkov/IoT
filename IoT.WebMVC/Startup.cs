@@ -41,7 +41,7 @@ namespace IoT.WebMVC
             services.AddMvc();
             services.AddWebSocketManager();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            services.Configure<AppSettings>(Configuration.GetSection("AdafruitSettings"));
+            services.Configure<BrokerSettings>(Configuration.GetSection("BrokerSettings"));
 
             services.AddSingleton<IBroker, AdafruitBroker>();
         }

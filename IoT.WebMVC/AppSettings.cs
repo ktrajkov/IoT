@@ -9,10 +9,6 @@ namespace IoT.WebMVC
     {
         public string WSServerUrl { get; set; }
 
-        public string Broker { get; set; }
-        public int Port { get; set; }
-        public string Username { get; set; }
-        public string Key { get; set; }
-        public string Feeds { get; set; }
+    
     }
 }

@@ -19,14 +19,14 @@ namespace IoT.WebMVC.IoTHandler
         public IoTMessageHandler(IBroker broker, WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
         {
             _broker = broker;
-            _broker.Subscribe(ChanelType.Relay.ToString());
+            _broker.Subscribe(ChanelType.Relay.ToString(), ChanelType.FirmwareUpdate.ToString());
             _broker.MsgPublishReceived += OnMsgPublishReceived;
         }
 
 
         public virtual async Task Log(string log)
         {
-            _broker.SendData(ChanelType.Loger.ToString().ToLower(), log);
+            _broker.SendData(ChanelType.Logger.ToString(), log);
 
             var json = new Message
             {
@@ -46,7 +46,7 @@ namespace IoT.WebMVC.IoTHandler
 
             foreach (var temp in tempsTM.Temps)
             {
-                _broker.SendData(ChanelType.Temp.ToString().ToLower() + temp.Id, temp.Value.ToString());
+                _broker.SendData(ChanelType.Temp.ToString() + temp.Id, temp.Value.ToString());
             }
 
             var json = new Message
@@ -57,23 +57,24 @@ namespace IoT.WebMVC.IoTHandler
             await InvokeClientMethodAsync("Kalin", Actions.UpdateTemps.ToString(), new object[] { json });
         }
 
-        private void OnMsgPublishReceived(object sender, EventArgs e)
+        private void OnMsgPublishReceived(object sender, MsgPublishReceivedEventArgs e)
         {
-            var message = Encoding.Default.GetString(((MqttMsgPublishEventArgs)e).Message);
-            SendMessageToAllAsync(new Message { Data = message, MessageType = MessageType.Text }).ConfigureAwait(false);
+            SendMessageToAllAsync(new Message { Data = e, MessageType = MessageType.Text }).ConfigureAwait(false);
         }
     }
 
     public enum Actions
     {
         UpdateTemps,
-        Log
+        Log,
+        FirmwareUpdate
     }
 
     public enum ChanelType
     {
         Temp,
         Relay,
-        Loger
+        Logger,
+        FirmwareUpdate
     }
 }

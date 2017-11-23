@@ -1,36 +1,39 @@
 ﻿using IoT.Data.Contracts.TransportModels;
 using System;
 using System.Text;
+using System.Linq;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
+using Microsoft.Extensions.Options;
 
 namespace IoT.Broker
 {
     public class AdafruitBroker : IBroker
     {
-        public MqttClient Client;
+        private MqttClient _client;
+        private string _username;
+        private string _key;
+        private string _baseTopic;
 
-        private const string broker = "io.adafruit.com";
-        private const int port = 1883;
-        private const string username = "kaluhckua";
-        private const string key = "7f4e0351e04dcc8081bc81caff53270d67152c28";
-        private const string feeds = "kaluhckua/feeds/";
+        public event EventHandler<MsgPublishReceivedEventArgs> MsgPublishReceived;
 
-        public event EventHandler<EventArgs> MsgPublishReceived;
-
-        public AdafruitBroker()
+        public AdafruitBroker(IOptions<BrokerSettings> options)
         {
-            Client = new MqttClient(broker, port, false, MqttSslProtocols.None, null, null);
-            Client.ConnectionClosed += OnConnectionClosed;
-            Client.MqttMsgPublishReceived += OnPublishReceived;
-            Client.MqttMsgSubscribed += OnSubscribed;
+            _username = options.Value.Username;
+            _key = options.Value.Key;
+            _baseTopic = $"{_username}/feeds/";
+
+            _client = new MqttClient(options.Value.HostName, options.Value.Port, false, MqttSslProtocols.None, null, null);
+            _client.ConnectionClosed += OnConnectionClosed;
+            _client.MqttMsgPublishReceived += OnPublishReceived;
+            _client.MqttMsgSubscribed += OnSubscribed;
             Connect();
         }
 
         public void Connect()
         {
             var clientId = Guid.NewGuid().ToString();
-            Client.Connect(clientId, username, key);
+            _client.Connect(clientId, _username, _key);
         }
 
         public void OnConnectionClosed(object sender, EventArgs e)
@@ -40,28 +43,42 @@ namespace IoT.Broker
 
         public void SendData(string chanel, string data)
         {
-            string feed = feeds + chanel;
-            Client.Publish(feed, Encoding.UTF8.GetBytes(data));
+            _client.Publish(GetTopic(chanel), Encoding.UTF8.GetBytes(data));
         }
 
-        private void Client_MqttMsgSubscribed(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgSubscribedEventArgs e)
+        public void Subscribe(params string[] chanels)
         {
-
-        } 
-
-        public void Subscribe(string chanel)
-        {
-            Client.Subscribe(new string[] { feeds + chanel.ToLower() }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+            foreach (var chanel in chanels)
+            {
+                _client.Subscribe(new string[] { GetTopic(chanel) }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+            }
         }
 
         public void OnPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
-            MsgPublishReceived(sender, e);
+            var message = new MsgPublishReceivedEventArgs
+            {
+                Value = Encoding.Default.GetString((e).Message),
+                Chanel = GetChanel(e.Topic)
+            };
+
+            MsgPublishReceived(sender, message);
         }
 
         public void OnSubscribed(object sender, MqttMsgSubscribedEventArgs e)
         {
+        }
 
+        private string GetTopic(string chanel)
+        {
+            return $"{_baseTopic}{chanel.ToLower()}";
+        }
+
+        private string GetChanel(string topic)
+        {
+            var baseTopicLenght = _baseTopic.Length;
+            var chanel = topic.Substring(baseTopicLenght, topic.Length - baseTopicLenght);
+            return chanel;
         }
     }
 }

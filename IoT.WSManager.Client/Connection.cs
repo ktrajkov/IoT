@@ -36,12 +36,12 @@ namespace IoT.WSManager.Client
             {
                 if (message.MessageType == MessageType.ConnectionEvent)
                 {
-                    this.ConnectionId = message.Data;
+                    this.ConnectionId = (string)message.Data;
                 }
 
                 else if (message.MessageType == MessageType.ClientMethodInvocation)
                 {
-                    var invocationDescriptor = JsonConvert.DeserializeObject<InvocationDescriptor>(message.Data, _jsonSerializerSettings);
+                    var invocationDescriptor = JsonConvert.DeserializeObject<InvocationDescriptor>((string)message.Data, _jsonSerializerSettings);
                     Invoke(invocationDescriptor);
                 }
             });
