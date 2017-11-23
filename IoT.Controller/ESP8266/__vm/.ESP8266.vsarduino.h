@@ -14,10 +14,13 @@
 #define _VSARDUINO_H_
 #define __ESP8266_ESp8266__
 #define __ESP8266_ESP8266__
+#define _DEBUG 1
 #define __ets__
 #define ICACHE_FLASH
 #define F_CPU 80000000L
 #define LWIP_OPEN_SRC
+#define DEBUG_ESP_PORT Serial
+#define DEBUG_SERVER
 #define DEBUG_ESP_OTA
 #define DEBUG_ESP_UPDATER
 #define ARDUINO 10804
