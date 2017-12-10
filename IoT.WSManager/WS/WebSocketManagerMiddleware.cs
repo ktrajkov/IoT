@@ -5,8 +5,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
+using IoT.CM.Models;
+using IoT.CM.Models.Enums;
 
-namespace IoT.WSManager
+namespace IoT.CM.WS
 {
     public class WebSocketManagerMiddleware
     {
@@ -24,16 +27,16 @@ namespace IoT.WSManager
         {
             if (!context.WebSockets.IsWebSocketRequest)
                 return;
-            
+
             var socket = await context.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-            var clientId = GetClienId(context);
-            await _webSocketHandler.OnConnected(clientId, socket).ConfigureAwait(false);
+            var client = GetClient(context);
+            await _webSocketHandler.OnConnected(client, socket).ConfigureAwait(false);
 
             await Receive(socket, async (result, serializedInvocationDescriptor) =>
             {
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    await _webSocketHandler.ReceiveAsync(socket, result, serializedInvocationDescriptor).ConfigureAwait(false);
+                    await _webSocketHandler.ReceiveAsync(socket, client.Id, result, serializedInvocationDescriptor).ConfigureAwait(false);
                     return;
                 }
 
@@ -83,10 +86,16 @@ namespace IoT.WSManager
             }
 
         }
-
-        private string GetClienId(HttpContext context)
+        //TODO Refactor
+        private Client GetClient(HttpContext context)
         {
-            return context.Request.Query["access_token"];
+            var client = new Client
+            {
+                Id = context.Request.Query["access_token"],
+                ClientType = context.Request.Headers["User-Agent"].FirstOrDefault() == "arduino-WebSocket-Client" ? ClientType.ESP8266 : ClientType.Unknown
+            };
+            return client;
         }
     }
 }
+

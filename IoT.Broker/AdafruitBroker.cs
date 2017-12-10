@@ -17,17 +17,17 @@ namespace IoT.Broker
 
         public event EventHandler<MsgPublishReceivedEventArgs> MsgPublishReceived;
 
-        public AdafruitBroker(IOptions<BrokerSettings> options)
+        public AdafruitBroker()
         {
-            _username = options.Value.Username;
-            _key = options.Value.Key;
-            _baseTopic = $"{_username}/feeds/";
+            //_username = options.Value.Username;
+            //_key = options.Value.Key;
+            //_baseTopic = $"{_username}/feeds/";
 
-            _client = new MqttClient(options.Value.HostName, options.Value.Port, false, MqttSslProtocols.None, null, null);
-            _client.ConnectionClosed += OnConnectionClosed;
-            _client.MqttMsgPublishReceived += OnPublishReceived;
-            _client.MqttMsgSubscribed += OnSubscribed;
-            Connect();
+            //_client = new MqttClient(options.Value.HostName, options.Value.Port, false, MqttSslProtocols.None, null, null);
+            //_client.ConnectionClosed += OnConnectionClosed;
+            //_client.MqttMsgPublishReceived += OnPublishReceived;
+            //_client.MqttMsgSubscribed += OnSubscribed;
+            //Connect();
         }
 
         public void Connect()

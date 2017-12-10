@@ -1,4 +1,4 @@
-﻿namespace IoT.WSManager.Common
+﻿namespace IoT.CM.Common
 {
     public enum MessageType
     {

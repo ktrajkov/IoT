@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IoT.Broker
+namespace IoT.CM.Models
 {
-    public class BrokerSettings
+    public class ExtClientCredential
     {
-        public string HostName { get; set; }
-        public int Port { get; set; }
+        public int Id { get; set; }
         public string Username { get; set; }
         public string Key { get; set; }
     }

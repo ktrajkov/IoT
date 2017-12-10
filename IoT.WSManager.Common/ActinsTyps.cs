@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IoT.WSManager.Common
+namespace IoT.CM.Common
 {
     public enum ActionTypes
     {

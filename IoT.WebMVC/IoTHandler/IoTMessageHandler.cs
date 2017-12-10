@@ -1,7 +1,7 @@
 ﻿using IoT.Broker;
 using IoT.Data.Contracts.TransportModels;
-using IoT.WSManager;
-using IoT.WSManager.Common;
+using IoT.CM;
+using IoT.CM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,23 +10,27 @@ using System.Text;
 using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static uPLibrary.Networking.M2Mqtt.MqttClient;
+using IoT.CM.WS;
+using IoT.CM.Managers;
+using IoT.CM.Models;
 
 namespace IoT.WebMVC.IoTHandler
 {
     public class IoTMessageHandler : WebSocketHandler
     {
-        private IBroker _broker;
-        public IoTMessageHandler(IBroker broker, WebSocketConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
+        public IoTMessageHandler(WebSocketConnectionManager connectionManager, ClientHandler clientHandler) : base(connectionManager, clientHandler)
         {
-            _broker = broker;
-            _broker.Subscribe(ChanelType.Relay.ToString(), ChanelType.FirmwareUpdate.ToString());
-            _broker.MsgPublishReceived += OnMsgPublishReceived;
+            ClientHandler.MsgReceived += clientHandler_MsgReceived;
         }
 
-
+        private void clientHandler_MsgReceived(object sender, MsgReceivedEventArgs e)
+        {
+            SendMessageToAllAsync(new Message { Data = e, MessageType = MessageType.Text }).ConfigureAwait(false);
+        }
+       
         public virtual async Task Log(string log)
         {
-            _broker.SendData(ChanelType.Logger.ToString(), log);
+            ClientHandler.SendMessage(1, ChanelType.Logger.ToString(), log);
 
             var json = new Message
             {
@@ -46,7 +50,7 @@ namespace IoT.WebMVC.IoTHandler
 
             foreach (var temp in tempsTM.Temps)
             {
-                _broker.SendData(ChanelType.Temp.ToString() + temp.Id, temp.Value.ToString());
+                ClientHandler.SendMessage(1, ChanelType.Temp.ToString() + temp.Id, temp.Value.ToString());
             }
 
             var json = new Message
@@ -55,11 +59,6 @@ namespace IoT.WebMVC.IoTHandler
                 MessageType = MessageType.Text
             };
             await InvokeClientMethodAsync("Kalin", Actions.UpdateTemps.ToString(), new object[] { json });
-        }
-
-        private void OnMsgPublishReceived(object sender, MsgPublishReceivedEventArgs e)
-        {
-            SendMessageToAllAsync(new Message { Data = e, MessageType = MessageType.Text }).ConfigureAwait(false);
         }
     }
 

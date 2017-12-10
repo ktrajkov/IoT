@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace IoT.WSManager.Common
+namespace IoT.CM.Common
 {
     public class InvocationDescriptor
     {

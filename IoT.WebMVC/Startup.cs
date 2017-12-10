@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IoT.WebMVC.IoTHandler;
-using IoT.WSManager;
+using IoT.CM;
 using System.Text;
 using System.Collections;
 using System.Reflection;
 using IoT.Broker;
+using IoT.CM.WS;
+using IoT.CM.Managers;
+using IoT.CM.Settings;
 
 namespace IoT.WebMVC
 {
@@ -41,9 +44,12 @@ namespace IoT.WebMVC
             services.AddMvc();
             services.AddWebSocketManager();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            services.Configure<BrokerSettings>(Configuration.GetSection("BrokerSettings"));
+            services.Configure<CMSettings>(Configuration.GetSection("ClientSettings"));
 
-            services.AddSingleton<IBroker, AdafruitBroker>();
+            services.AddSingleton<WebSocketConnectionManager>();
+            services.AddSingleton<ClientConnectionManager>();
+            services.AddSingleton<ClientHandler>();
+            services.AddSingleton<BaseClientManager, AdafruitClientManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

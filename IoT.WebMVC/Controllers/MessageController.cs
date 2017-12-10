@@ -21,7 +21,7 @@ namespace IoT.WebMVC.Controllers
             [HttpGet]
             public async Task SendMessage([FromQueryAttribute]string message)
             {
-                await _ioTMessageHandler.InvokeClientMethodToAllAsync("receiveMessage", message);
+               // await _ioTMessageHandler.InvokeClientMethodToAllAsync("receiveMessage", message);
             }
         }
     }

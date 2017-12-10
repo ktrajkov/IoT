@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-using IoT.WSManager.Common;
+using IoT.CM.Common;
 
-namespace IoT.WSManager.Client
+namespace IoT.CM.Client
 {
     public class Connection
     {
